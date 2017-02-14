@@ -54,6 +54,11 @@ public class CDCSerialDevice extends UsbSerialDevice
 	{
 		super(device, connection);
 		mInterface = device.getInterface(iface >= 0 ? iface : findFirstCDC(device));
+		
+		if (mInterface.getInterfaceClass() != UsbConstants.USB_CLASS_CDC_DATA)
+		{
+			throw new IllegalArgumentException("Interface " + mInterface.getId() + " is not a CDC class interface");
+		}
 	}
 
 	@Override
