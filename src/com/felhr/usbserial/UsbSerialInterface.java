@@ -31,6 +31,7 @@ public interface UsbSerialInterface
 	// Common Usb Serial Operations (I/O Asynchronous)
 	public boolean open();
 	public void write(byte[] buffer);
+        public void writeSync(byte[] buffer);
 	public int read(UsbReadCallback mCallback);
 	public void close();
 	

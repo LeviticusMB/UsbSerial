@@ -93,7 +93,13 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
 	{
 		serialBuffer.putWriteBuffer(buffer);
 	}
-	
+
+	@Override
+	public void writeSync(byte[] buffer)
+	{
+            connection.bulkTransfer(writeThread.outEndpoint, buffer, buffer.length, USB_TIMEOUT);
+	}
+    
 	@Override
 	public int read(UsbReadCallback mCallback)
 	{
