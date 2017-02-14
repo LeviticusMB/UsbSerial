@@ -148,14 +148,17 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
 		int iIndex = device.getInterfaceCount();
 		for(int i=0;i<=iIndex-1;i++)
 		{
-			UsbInterface iface = device.getInterface(i);
-			if(iface.getInterfaceClass() == UsbConstants.USB_CLASS_CDC_DATA)
+			if (isCdcInterface(device.getInterface(i)))
 				return true;
 		}
 		return false;
 	}
-	
-	
+
+	public static boolean isCdcInterface(UsbInterface iface)
+	{
+		return iface.getInterfaceClass() == UsbConstants.USB_CLASS_CDC_DATA;
+	}
+
 	/*
 	 * WorkerThread waits for request notifications from IN endpoint
 	 */
