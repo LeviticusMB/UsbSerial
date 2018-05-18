@@ -179,7 +179,11 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
 			while(working.get())
 			{
 				UsbRequest request = connection.requestWait();
-				if(request != null && request.getEndpoint().getType() == UsbConstants.USB_ENDPOINT_XFER_BULK
+				if (request == null) {
+				    stopWorkingThread();
+				    callback.onError();
+				}
+				else if(request != null && request.getEndpoint().getType() == UsbConstants.USB_ENDPOINT_XFER_BULK
 						&& request.getEndpoint().getDirection() == UsbConstants.USB_DIR_IN)
 				{
 					byte[] data = serialBuffer.getDataReceived();
@@ -307,6 +311,11 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
 					{
 						callback.onReceivedData(dataReceived);
 					}
+				} 
+				else 
+				{
+				    stopReadThread();
+				    callback.onError();
 				}
 			}
 		}

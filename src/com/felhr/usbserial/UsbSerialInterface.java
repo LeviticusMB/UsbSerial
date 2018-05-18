@@ -46,6 +46,7 @@ public interface UsbSerialInterface
 	public interface UsbReadCallback
 	{
 		public void onReceivedData(byte[] data);
+        public void onError();
 	}
 	
 }
