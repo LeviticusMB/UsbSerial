@@ -178,36 +178,40 @@ public abstract class UsbSerialDevice implements UsbSerialInterface
 		{
 			while(working.get())
 			{
-				UsbRequest request = connection.requestWait();
-				if (request == null) {
-				    stopWorkingThread();
-				    callback.onError();
-				}
-				else if(request != null && request.getEndpoint().getType() == UsbConstants.USB_ENDPOINT_XFER_BULK
-						&& request.getEndpoint().getDirection() == UsbConstants.USB_DIR_IN)
-				{
-					byte[] data = serialBuffer.getDataReceived();
-					
-					// FTDI devices reserves two first bytes of an IN endpoint with info about
-					// modem and Line.
-					if(isFTDIDevice())
-					{
-						if(data.length > 2)
-						{
-							data = FTDISerialDevice.FTDIUtilities.adaptArray(data);
-							// Clear buffer, execute the callback 
-							serialBuffer.clearReadBuffer();
-							onReceivedData(data);
-						}
-					}else
-					{
-						// Clear buffer, execute the callback 
-						serialBuffer.clearReadBuffer();
-						onReceivedData(data);
-					}
-					// Queue a new request
-					requestIN.queue(serialBuffer.getReadBuffer(), SerialBuffer.DEFAULT_READ_BUFFER_SIZE);
-				}
+			    try {
+    				UsbRequest request = connection.requestWait();
+    				if (request == null) {
+    				    throw new Exception("request aborted");
+    				}
+    				else if(request != null && request.getEndpoint().getType() == UsbConstants.USB_ENDPOINT_XFER_BULK
+    						&& request.getEndpoint().getDirection() == UsbConstants.USB_DIR_IN)
+    				{
+    					byte[] data = serialBuffer.getDataReceived();
+    					
+    					// FTDI devices reserves two first bytes of an IN endpoint with info about
+    					// modem and Line.
+    					if(isFTDIDevice())
+    					{
+    						if(data.length > 2)
+    						{
+    							data = FTDISerialDevice.FTDIUtilities.adaptArray(data);
+    							// Clear buffer, execute the callback 
+    							serialBuffer.clearReadBuffer();
+    							onReceivedData(data);
+    						}
+    					}else
+    					{
+    						// Clear buffer, execute the callback 
+    						serialBuffer.clearReadBuffer();
+    						onReceivedData(data);
+    					}
+    					// Queue a new request
+    					requestIN.queue(serialBuffer.getReadBuffer(), SerialBuffer.DEFAULT_READ_BUFFER_SIZE);
+    				}
+			    } catch (Exception e) {
+                    stopWorkingThread();
+                    callback.onError();
+			    }
 			}
 		}
 		
